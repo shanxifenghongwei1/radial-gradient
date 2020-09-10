@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+	<head>
+
+		<!-- Basic -->
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+		<title>魔方识字阅读 - 超越同龄孩子，学会独立阅读</title>	
+
+		<meta name="keywords" content="魔方,魔方识字阅读,识字,阅读,识字阅读,大数据" />
+		<meta name="description" content="魔方识字阅读 - 超越同龄孩子，学会独立阅读">
+
+		<!-- Mobile Metas -->
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+
+	</head>
+	<body>
+		<div class="body">
+			<img src="https://mfm.xbbwsm.com/static/base/logo-lg.png" class="shuiyin" alt="">
+			<div id="primary"></div>
+		</div>
+		<script src="https://lib.baomitu.com/jquery/3.3.1/jquery.min.js"></script>
+		<script src="https://lib.baomitu.com/jquery-easing/1.4.1/jquery.easing.min.js"></script>
+
+		<script type="text/javascript">
+			(function($){
+			  $getUrlParam = function(name) {
+				var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+				var r = window.location.search.substr(1).match(reg);
+				if (r!=null) return unescape(r[2]); return null;
+			  }
+			})(jQuery);
+			// 获取详情数据
+			jQuery(function(){
+				jQuery.ajax({
+					type: "GET",
+					url: "https://mfapi.xbbwsm.com/api/open/user/matchread/read/detail",
+					dataType: 'json',
+					data: {
+						data: JSON.stringify({
+							"id": $getUrlParam("id"),
+							"userId": $getUrlParam("userId"),
+							"type": $getUrlParam("type"),
+							"authCode":$getUrlParam("authCode")
+						})
+					},
+					success: function(res, textStatus){
+						let datas = res.data[$getUrlParam('type')];
+						let str = '';
+						res.data.knowWords && res.data.knowWords.forEach(item => {
+							datas.content = datas.content.replace(new RegExp(item, 'g'), `<span class="fw900">${item}</span>`)
+						})
+						if (datas && datas.author) { // 是否需要显示作者
+							let dynasty = ''
+							if ($getUrlParam('type') === 'poetry') {  // 是否需要显示朝代
+								dynasty = "[" + datas.dynasty + "] "
+							}
+							str = "<pre><h2 style='margin-bottom:20px;font-size:36px;font-weight:bolder;text-align:center;'>"+datas.title+"</h2><p style='font-size:20px;color:#999;margin-bottom:10px;text-align:center;'>"+dynasty+datas.author+"</p><p style='font-size:24px;color:#666;'>"+datas.content+"</p></pre>"
+						} else {
+							str = "<pre><h2 style='margin-bottom:20px;font-size:36px;font-weight:bolder;text-align:center;'>"+datas.title+"</h2><p style='font-size:24px;color:#666;'>"+datas.content+"</p></pre>"
+						}
+					jQuery("#primary").html(str)
+					}
+				})
+			})
+		</script>
+		<style>
+			body{
+				font-family: PingFang SC,Helvetica Neue,Arial,sans-serif;
+			}
+			.shuiyin{
+				width: 20%;
+				position: fixed;
+				left: 50%;
+				bottom: 0;
+				margin-left: -10%;
+				opacity: 0.5;
+			}
+			.fw900{
+				font-weight: 900;
+				color: #000;
+			}
+			pre{ 
+				white-space:pre-wrap;/*css-3*/ 
+				white-space:-moz-pre-wrap;/*Mozilla,since1999*/ 
+				white-space:-pre-wrap;/*Opera4-6*/ 
+				white-space:-o-pre-wrap;/*Opera7*/ 
+				word-wrap:break-word;/*InternetExplorer5.5+*/
+			} 
+		</style>
+
+
+	</body>
+</html>
